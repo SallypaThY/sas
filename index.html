@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>光影与笔触 · 她的小画廊</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --border: #e5e5ea;
+    --text: #1d1d1f;
+    --text2: #86868b;
+    --blue: #0071e3;
+    --blue-hover: #0077ed;
+    --r: 14px;
+    --serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== 顶栏 ===== */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(245,245,247,0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav {
+    max-width: 1080px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+  }
+  .brand {
+    font-family: var(--serif); font-weight: 700; font-size: 1.15rem;
+    letter-spacing: 0.02em; cursor: pointer;
+  }
+  .brand span { color: var(--blue); }
+  .nav-links { display: flex; gap: 26px; }
+  .nav-links a {
+    color: var(--text2); text-decoration: none; font-size: 0.95rem; font-weight: 500;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* ===== Hero ===== */
+  .hero {
+    max-width: 1080px; margin: 0 auto;
+    padding: 80px 24px 40px;
+    text-align: center;
+  }
+  .hero .eyebrow {
+    display: inline-block; font-size: 0.85rem; color: var(--blue);
+    font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: var(--serif); font-weight: 900;
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    line-height: 1.15; letter-spacing: 0.01em;
+    margin-bottom: 18px;
+  }
+  .hero p {
+    color: var(--text2); font-size: 1.1rem; max-width: 520px;
+    margin: 0 auto; font-weight: 300;
+  }
+
+  /* ===== 筛选标签 ===== */
+  .filters {
+    display: flex; justify-content: center; gap: 8px;
+    padding: 10px 24px 26px; flex-wrap: wrap;
+  }
+  .filter-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 999px; padding: 8px 20px;
+    font-size: 0.92rem; font-weight: 500; color: var(--text2);
+    cursor: pointer; transition: all 0.18s;
+    font-family: var(--sans);
+  }
+  .filter-btn:hover { color: var(--text); transform: translateY(-1px); }
+  .filter-btn.active {
+    background: var(--text); color: #fff; border-color: var(--text);
+  }
+
+  /* ===== 画廊瀑布流 ===== */
+  .gallery {
+    max-width: 1080px; margin: 0 auto;
+    padding: 0 24px 60px;
+    columns: 3 280px; column-gap: 18px;
+  }
+  .item {
+    break-inside: avoid; margin-bottom: 18px;
+    background: var(--surface); border-radius: var(--r); overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    cursor: zoom-in; position: relative;
+    opacity: 0; transform: translateY(18px);
+    transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.25s;
+  }
+  .item.in { opacity: 1; transform: translateY(0); }
+  .item:hover { box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+  .item img {
+    width: 100%; display: block; transition: transform 0.5s cubic-bezier(0.2,0.6,0.2,1);
+  }
+  .item:hover img { transform: scale(1.04); }
+  .item .cap {
+    padding: 12px 16px 14px;
+  }
+  .item .cap h3 { font-size: 0.98rem; font-weight: 600; margin-bottom: 2px; }
+  .item .cap p { font-size: 0.85rem; color: var(--text2); font-weight: 300; }
+  .tag {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(255,255,255,0.9); backdrop-filter: blur(8px);
+    color: var(--text); font-size: 0.72rem; font-weight: 600;
+    padding: 4px 10px; border-radius: 999px; letter-spacing: 0.03em;
+  }
+
+  /* ===== 关于 ===== */
+  .about {
+    max-width: 760px; margin: 0 auto; padding: 40px 24px 90px;
+  }
+  .about-card {
+    background: var(--surface); border-radius: 20px; padding: 44px 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display: flex; gap: 30px; align-items: center;
+  }
+  .about-card .avatar {
+    width: 110px; height: 110px; border-radius: 50%; flex-shrink: 0;
+    object-fit: cover; box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  }
+  .about-card h2 {
+    font-family: var(--serif); font-size: 1.5rem; margin-bottom: 8px;
+  }
+  .about-card p { color: var(--text2); font-weight: 300; font-size: 0.98rem; }
+
+  footer {
+    text-align: center; padding: 30px 24px 50px;
+    color: var(--text2); font-size: 0.85rem; font-weight: 300;
+  }
+
+  /* ===== 灯箱 ===== */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.92);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  }
+  .lightbox.open { opacity: 1; pointer-events: auto; }
+  .lightbox img {
+    max-width: 90vw; max-height: 82vh; border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: scale(0.92); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .lightbox.open img { transform: scale(1); }
+  .lightbox .lb-cap {
+    position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+    color: #fff; text-align: center; width: 90vw;
+  }
+  .lightbox .lb-cap h3 { font-family: var(--serif); font-size: 1.2rem; font-weight: 700; }
+  .lightbox .lb-cap p { color: rgba(255,255,255,0.6); font-size: 0.9rem; font-weight: 300; }
+  .lb-btn {
+    position: absolute; background: rgba(255,255,255,0.12); border: none;
+    color: #fff; width: 44px; height: 44px; border-radius: 50%;
+    font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s; font-family: var(--sans);
+  }
+  .lb-btn:hover { background: rgba(255,255,255,0.25); }
+  .lb-close { top: 22px; right: 22px; }
+  .lb-prev { left: 20px; top: 50%; transform: translateY(-50%); }
+  .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
+
+  #confetti-canvas {
+    position: fixed; inset: 0; pointer-events: none; z-index: 200;
+    width: 100%; height: 100%;
+  }
+
+  /* ===== 移动端 ===== */
+  @media (max-width: 640px) {
+    .hero { padding: 54px 20px 28px; }
+    .gallery { columns: 2 150px; column-gap: 12px; padding: 0 14px 40px; }
+    .item { margin-bottom: 12px; }
+    .about-card { flex-direction: column; text-align: center; padding: 32px 24px; }
+    .nav-links { gap: 18px; }
+    .lb-prev { left: 8px; } .lb-next { right: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand" onclick="scrollTo({top:0,behavior:'smooth'})">光影<span>·</span>笔触</div>
+    <nav class="nav-links">
+      <a href="#gallery">画廊</a>
+      <a href="#about">关于</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <span class="eyebrow">A little gallery</span>
+  <h1>把喜欢的东西<br>都收在这里</h1>
+  <p>一些镜头，几幅画，都是生活里慢慢攒下来的光。</p>
+</section>
+
+<div class="filters" id="filters">
+  <button class="filter-btn active" data-cat="all">全部</button>
+  <button class="filter-btn" data-cat="photo">摄影</button>
+  <button class="filter-btn" data-cat="draw">绘画</button>
+</div>
+
+<main class="gallery" id="gallery"></main>
+
+<section class="about" id="about">
+  <div class="about-card">
+    <img class="avatar" src="images/avatar.jpg" alt="头像">
+    <div>
+      <h2>关于她</h2>
+      <p>精英律师小桐子，爱举起相机和拿起画笔。在法条之外，记录晚霞、窗台、雨后的巷子，也画下安静的猫与海。这里是我们的小世界，欢迎随便逛逛。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 光影·笔触 &nbsp;·&nbsp; 用喜欢的方式记录生活
+</footer>
+
+<!-- 灯箱 -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-btn lb-close" id="lb-close" aria-label="关闭">✕</button>
+  <button class="lb-btn lb-prev" id="lb-prev" aria-label="上一张">‹</button>
+  <img id="lb-img" src="" alt="">
+  <button class="lb-btn lb-next" id="lb-next" aria-label="下一张">›</button>
+  <div class="lb-cap">
+    <h3 id="lb-title"></h3>
+    <p id="lb-desc"></p>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+/* ============================================================
+   ★★★  在这里添加她的照片和画  ★★★
+   每加一张，就复制一行，改 src / title / desc / cat 即可
+   cat 填 "photo"（摄影）或 "draw"（绘画）
+   ============================================================ */
+const WORKS = [
+  { src: "images/de500b40.jpg", title: "海边黄昏", cat: "photo", desc: "一个人看海的时候，心是静的" },
+  { src: "images/031cc407.jpg", title: "线稿",     cat: "draw",  desc: "几笔下去，人就有了神气" },
+  { src: "images/7999f699.jpg", title: "花下",     cat: "photo", desc: "像不小心走进了一幅画" },
+  { src: "images/09d1f190.jpg", title: "约稿",     cat: "draw",  desc: "被人喜欢的画，最开心" },
+  { src: "images/485575e4.jpg", title: "制服",     cat: "photo", desc: "认真起来的样子最有光" },
+  { src: "images/180ee129.jpg", title: "古风",     cat: "draw",  desc: "衣袂飘飘，像从画里走出来" },
+  { src: "images/9e3c68b2.jpg", title: "窗台的猫", cat: "photo", desc: "它比午后的阳光还懒" },
+  { src: "images/38f80373.jpg", title: "猫耳",     cat: "draw",  desc: "好想伸手揉揉脑袋" },
+  { src: "images/52d6d0b7.jpg", title: "色彩",     cat: "photo", desc: "乱七八糟，却莫名治愈" },
+  { src: "images/48ae80fd.jpg", title: "Q版",     cat: "draw",  desc: "软萌到心都化了" },
+  { src: "images/80b60f69.jpg", title: "湖边的饭", cat: "photo", desc: "风景比菜还下饭" },
+  { src: "images/53aea7f6.jpg", title: "两个人",   cat: "draw",  desc: "画里也藏着故事" },
+  { src: "images/8b82a699.jpg", title: "海边",     cat: "photo", desc: "有人一起发呆就很好" },
+  { src: "images/60a88cc4.jpg", title: "花与少女", cat: "draw",  desc: "淡淡的，很温柔" },
+  { src: "images/e182a962.jpg", title: "聚餐",     cat: "photo", desc: "热热闹闹才是青春" },
+  { src: "images/81e17cfe.jpg", title: "花海",     cat: "draw",  desc: "像做了一场长长的梦" },
+  { src: "images/6fdb0085.jpg", title: "树下",     cat: "photo", desc: "它安安静静站了很多年" },
+  { src: "images/891a01fa.jpg", title: "红发",     cat: "draw",  desc: "张扬，又自由" },
+  { src: "images/71e61d3f.jpg", title: "书店",     cat: "photo", desc: "想在这里赖一下午" },
+  { src: "images/a0d29613.jpg", title: "白发",     cat: "draw",  desc: "清清淡淡的气质" },
+  { src: "images/b45a6864.jpg", title: "抱猫",     cat: "photo", desc: "软乎乎的，全是依赖" },
+  { src: "images/a280b4f8.jpg", title: "眼泪",     cat: "draw",  desc: "线条把情绪画出来了" },
+  { src: "images/97f87bfa.jpg", title: "摸猫",     cat: "photo", desc: "时间在这里变慢了" },
+  { src: "images/a6d37c91.jpg", title: "蝴蝶",     cat: "draw",  desc: "线条像会呼吸" },
+  { src: "images/fa9b6d56.jpg", title: "红墙",     cat: "photo", desc: "大胆，又热烈" },
+  { src: "images/b1d819ba.jpg", title: "少年",     cat: "draw",  desc: "一眼看过去就挪不开" },
+  { src: "images/0cc522b9.jpg", title: "背影",     cat: "photo", desc: "风把头发吹得很乱" },
+  { src: "images/bc25552c.jpg", title: "紫",       cat: "draw",  desc: "神秘又好看" },
+  { src: "images/10948a37.jpg", title: "街上",     cat: "photo", desc: "随手一拍就很松弛" },
+  { src: "images/be381f2e.jpg", title: "白发Q版", cat: "draw",  desc: "可爱到犯规" },
+  { src: "images/23d5e825.jpg", title: "镜子里",   cat: "photo", desc: "日常也值得记一笔" },
+  { src: "images/dea8dd62.jpg", title: "铅笔稿",   cat: "draw",  desc: "笑起来真的很好看" },
+  { src: "images/37484af0.jpg", title: "黑T",     cat: "photo", desc: "酷一点也很好" },
+  { src: "images/e844d325.jpg", title: "速写本",   cat: "draw",  desc: "一整本都是悄悄努力" },
+  { src: "images/3d86fa89.jpg", title: "咖啡馆",   cat: "photo", desc: "和喜欢的人待着就很好" },
+  { src: "images/08297310.jpg", title: "草稿",     cat: "draw",  desc: "画到上头的那个晚上" },
+  { src: "images/514f5b34.jpg", title: "食堂",     cat: "photo", desc: "干饭人的日常" },
+  { src: "images/2de133ed.jpg", title: "火力",     cat: "draw",  desc: "又飒又可爱" },
+  { src: "images/6ea02aec.jpg", title: "对镜",     cat: "photo", desc: "今天也有好好生活" },
+  { src: "images/95f97c77.jpg", title: "毛衣",     cat: "photo", desc: "暖暖的季节" },
+  { src: "images/afbaf242.jpg", title: "镜头前",   cat: "photo", desc: "眼睛里有光" },
+  { src: "images/c229037d.jpg", title: "路边",     cat: "photo", desc: "风吹过来很舒服" },
+  { src: "images/c9981345.jpg", title: "窗边",     cat: "photo", desc: "侧脸也很好看" },
+  { src: "images/d7bed6b2.jpg", title: "不用笑",   cat: "photo", desc: "不笑的时候也很好看" },
+];
+
+const CAT_NAME = { photo: "摄影", draw: "绘画" };
+const gallery = document.getElementById("gallery");
+const filters = document.getElementById("filters");
+let currentList = [];
+let currentIndex = 0;
+
+function render(cat) {
+  gallery.innerHTML = "";
+  currentList = cat === "all" ? WORKS : WORKS.filter(w => w.cat === cat);
+  currentList.forEach((w, i) => {
+    const el = document.createElement("div");
+    el.className = "item";
+    el.innerHTML = `
+      <span class="tag">${CAT_NAME[w.cat]}</span>
+      <img src="${w.src}" alt="${w.title}" loading="lazy">
+      <div class="cap"><h3>${w.title}</h3><p>${w.desc}</p></div>`;
+    el.addEventListener("click", () => openLightbox(i));
+    gallery.appendChild(el);
+    setTimeout(() => el.classList.add("in"), 60 * i);
+  });
+}
+
+/* 筛选 */
+filters.addEventListener("click", (e) => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  filters.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  render(btn.dataset.cat);
+});
+
+/* ===== 灯箱 ===== */
+const lb = document.getElementById("lightbox");
+const lbImg = document.getElementById("lb-img");
+const lbTitle = document.getElementById("lb-title");
+const lbDesc = document.getElementById("lb-desc");
+
+function openLightbox(i) {
+  currentIndex = i;
+  updateLb();
+  lb.classList.add("open");
+  document.body.style.overflow = "hidden";
+  fireConfetti();
+}
+function updateLb() {
+  const w = currentList[currentIndex];
+  lbImg.src = w.src;
+  lbTitle.textContent = w.title;
+  lbDesc.textContent = w.desc;
+}
+function closeLb() { lb.classList.remove("open"); document.body.style.overflow = ""; }
+function step(d) {
+  currentIndex = (currentIndex + d + currentList.length) % currentList.length;
+  updateLb();
+}
+document.getElementById("lb-close").addEventListener("click", closeLb);
+document.getElementById("lb-prev").addEventListener("click", () => step(-1));
+document.getElementById("lb-next").addEventListener("click", () => step(1));
+lb.addEventListener("click", (e) => { if (e.target === lb) closeLb(); });
+document.addEventListener("keydown", (e) => {
+  if (!lb.classList.contains("open")) return;
+  if (e.key === "Escape") closeLb();
+  if (e.key === "ArrowLeft") step(-1);
+  if (e.key === "ArrowRight") step(1);
+});
+
+/* ===== 撒花（和同学那个一样的小彩蛋）===== */
+function fireConfetti() {
+  const canvas = document.getElementById("confetti-canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ["#0071e3", "#ff9f0a", "#34c759", "#ff3b30", "#af52de", "#ff2d55"];
+  const pieces = [];
+  for (let i = 0; i < 90; i++) {
+    pieces.push({
+      x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+      y: canvas.height / 2,
+      vx: (Math.random() - 0.5) * 14,
+      vy: -Math.random() * 16 - 4,
+      w: Math.random() * 8 + 4, h: Math.random() * 5 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rot: Math.random() * 360, rotS: (Math.random() - 0.5) * 12, life: 1,
+      decay: 0.008 + Math.random() * 0.008,
+    });
+  }
+  let f = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    for (const p of pieces) {
+      if (p.life <= 0) continue;
+      alive = true;
+      p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.vx *= 0.99;
+      p.rot += p.rotS; p.life -= p.decay;
+      ctx.save();
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
+      ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    }
+    if (alive && f < 180) { requestAnimationFrame(draw); }
+    else { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    f++;
+  }
+  requestAnimationFrame(draw);
+}
+
+render("all");
+</script>
+</body>
+</html>
